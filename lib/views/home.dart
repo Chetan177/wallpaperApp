@@ -25,11 +25,18 @@ class _HomeState extends State<Home> {
           "563492ad6f91700001000001f5de662d8f054a9fb3f1b2088d836a73"
     });
 
+    // Load wallpaper
     Map<String,dynamic> jsonData = jsonDecode(response.body);
     jsonData["photos"].forEach((element){
-      print(element);
+      WallpaperModel wallpaperModel = new WallpaperModel();
+      wallpaperModel = WallpaperModel.fromMap(element);
+      wallpapers.add(wallpaperModel);
     });
 
+    // create new screen
+    setState(() {
+
+    });
   }
 
   @override

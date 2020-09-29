@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wallpaperApp/data/data.dart';
 import 'package:wallpaperApp/model/categories_model.dart';
 import 'package:wallpaperApp/model/wallpaper_model.dart';
+import 'package:wallpaperApp/views/search.dart';
 import 'package:wallpaperApp/widgets/widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,21 +16,28 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Categories Tile Data
   List<CategoriesModel> categories = new List();
+
   // Wallpaper List
   List<WallpaperModel> wallpapers = new List();
+
+  TextEditingController searchController = new TextEditingController();
 
   getTrendingWallpaper() async {
     var response = await http
         .get("https://api.pexels.com/v1/curated?per_page=20&page=1", headers: {
-      "Authorization":
-          "563492ad6f91700001000001f5de662d8f054a9fb3f1b2088d836a73"
+      "Authorization": apiKEY
     });
 
-    Map<String,dynamic> jsonData = jsonDecode(response.body);
-    jsonData["photos"].forEach((element){
-      print(element);
+    // Load wallpaper
+    Map<String, dynamic> jsonData = jsonDecode(response.body);
+    jsonData["photos"].forEach((element) {
+      WallpaperModel wallpaperModel = new WallpaperModel();
+      wallpaperModel = WallpaperModel.fromMap(element);
+      wallpapers.add(wallpaperModel);
     });
 
+    // create new screen
+    setState(() {});
   }
 
   @override
@@ -44,48 +52,63 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         title: brandName(),
         elevation: 0.0,
       ),
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                  color: Color(0xfff5f8fd),
-                  borderRadius: BorderRadius.circular(30)),
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              margin: EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                          hintText: "search walls", border: InputBorder.none),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                    color: Color(0xfff5f8fd),
+                    borderRadius: BorderRadius.circular(30)),
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                margin: EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                            hintText: "search walls", border: InputBorder.none),
+                      ),
                     ),
-                  ),
-                  Icon(Icons.search),
-                ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Search(
+                                      searchQuery: searchController.text,
+                                    )));
+                      },
+                      child: Container(child: Icon(Icons.search)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Container(
+              SizedBox(
+                height: 16,
+              ),
+              Container(
                 height: 80,
                 child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    return CategoriesTile(
-                      title: categories[index].categoriesName,
-                      imgURL: categories[index].imgURL,
-                    );
-                  },
-                ))
-          ],
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      return CategoriesTile(
+                        title: categories[index].categoriesName,
+                        imgURL: categories[index].imgURL,
+                      );
+                    }),
+              ),
+              wallpaperList(wallpapers: wallpapers, context: context)
+            ],
+          ),
         ),
       ),
     );
@@ -113,7 +136,10 @@ class CategoriesTile extends StatelessWidget {
             ),
           ),
           Container(
-            color: Colors.black26,
+            decoration: BoxDecoration(
+              color: Colors.black26,
+              borderRadius: BorderRadius.circular(16),
+            ),
             height: 50,
             width: 100,
             alignment: Alignment.center,

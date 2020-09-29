@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wallpaperApp/data/data.dart';
 import 'package:wallpaperApp/model/categories_model.dart';
 import 'package:wallpaperApp/model/wallpaper_model.dart';
+import 'package:wallpaperApp/views/search.dart';
 import 'package:wallpaperApp/widgets/widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,11 +20,12 @@ class _HomeState extends State<Home> {
   // Wallpaper List
   List<WallpaperModel> wallpapers = new List();
 
+  TextEditingController searchController = new TextEditingController();
+
   getTrendingWallpaper() async {
     var response = await http
         .get("https://api.pexels.com/v1/curated?per_page=20&page=1", headers: {
-      "Authorization":
-          "563492ad6f91700001000001f5de662d8f054a9fb3f1b2088d836a73"
+      "Authorization": apiKEY
     });
 
     // Load wallpaper
@@ -50,6 +52,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         title: brandName(),
         elevation: 0.0,
       ),
@@ -67,11 +70,22 @@ class _HomeState extends State<Home> {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
+                        controller: searchController,
                         decoration: InputDecoration(
                             hintText: "search walls", border: InputBorder.none),
                       ),
                     ),
-                    Icon(Icons.search),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Search(
+                                      searchQuery: searchController.text,
+                                    )));
+                      },
+                      child: Container(child: Icon(Icons.search)),
+                    ),
                   ],
                 ),
               ),

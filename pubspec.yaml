@@ -24,6 +24,15 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.12.2
+  dio: ^3.0.9
+  image_gallery_saver: ^1.2.2
+  permission_handler: ^5.0.1+1
+  flutter_launcher_icons: ^0.8.0
+
+flutter_icons:
+  image_path: "assets/wallpapzel.png"
+  ios: true
+  andriod: true
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -8,6 +8,9 @@ import 'package:wallpaperApp/views/search.dart';
 import 'package:wallpaperApp/widgets/widget.dart';
 import 'package:http/http.dart' as http;
 
+import 'categories.dart';
+import 'image_view.dart';
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -23,10 +26,9 @@ class _HomeState extends State<Home> {
   TextEditingController searchController = new TextEditingController();
 
   getTrendingWallpaper() async {
-    var response = await http
-        .get("https://api.pexels.com/v1/curated?per_page=20&page=1", headers: {
-      "Authorization": apiKEY
-    });
+    var response = await http.get(
+        "https://api.pexels.com/v1/curated?per_page=20&page=1",
+        headers: {"Authorization": apiKEY});
 
     // Load wallpaper
     Map<String, dynamic> jsonData = jsonDecode(response.body);
@@ -122,37 +124,50 @@ class CategoriesTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 4),
-      child: Stack(
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              imgURL,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Categories(
+                      categoryName: title.toLowerCase(),
+                    )));
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 4),
+        child: Stack(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                imgURL,
+                height: 50,
+                width: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black26,
+                borderRadius: BorderRadius.circular(16),
+              ),
               height: 50,
               width: 100,
-              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              child: Text(
+                title,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15),
+              ),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            height: 50,
-            width: 100,
-            alignment: Alignment.center,
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+
+// 2 hr 04
